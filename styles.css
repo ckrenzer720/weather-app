@@ -1,0 +1,27 @@
+/* Weather App — Styles
+   Purpose: layout, typography, search form, weather card, unit toggle, responsive.
+   (No implementation yet; planning stage.) */
+
+.app {
+  /* layout */
+}
+
+.header {
+  /* title, tagline */
+}
+
+.search-form {
+  /* input + button */
+}
+
+.message {
+  /* loading / error text */
+}
+
+.weather-card {
+  /* location, temp, sunrise, sunset, etc. */
+}
+
+.footer {
+  /* credit link */
+}
