@@ -1,0 +1,13 @@
+{
+  "name": "weather-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Current weather for any location — vanilla HTML/CSS/JS",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

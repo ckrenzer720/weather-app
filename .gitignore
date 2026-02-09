@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# API key / secrets (never commit)
+.env
+.env.local
+.env.*.local
+config.local.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / IDE (optional; uncomment if you want to ignore)
+# .vscode/
+# .idea/

@@ -1,32 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather App</title>
-    <!-- styles.css: all layout and styling -->
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- App container -->
-    <div class="app">
-      <!-- Header: title, tagline -->
-      <header class="header"></header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="title">Weather App</h1>
+      <p class="tagline">Current conditions anywhere</p>
+    </header>
 
-      <!-- Search: input + submit button -->
-      <form class="search-form" id="searchForm"></form>
+    <form class="search-form" id="searchForm">
+      <input type="text" id="searchInput" class="search-input" placeholder="City or City, Country" required />
+      <button type="submit" class="search-btn" id="searchBtn">Search</button>
+    </form>
 
-      <!-- Message area: loading / error (role="status" or similar) -->
-      <div class="message" id="message"></div>
+    <div class="message" id="message" role="status" aria-live="polite"></div>
 
-      <!-- Weather card: location, temp, units, sunrise, sunset, optional details -->
-      <main class="weather-card" id="weatherCard"></main>
+    <main class="weather-card" id="weatherCard" hidden>
+      <div class="weather-header">
+        <h2 class="location" id="location">—</h2>
+        <p class="date" id="date">—</p>
+      </div>
+      <div class="weather-main">
+        <div class="temp-row">
+          <span class="temp" id="temp">—</span>
+          <div class="unit-toggle">
+            <button type="button" class="unit-btn active" id="btnCelsius" aria-pressed="true">°C</button>
+            <button type="button" class="unit-btn" id="btnFahrenheit" aria-pressed="false">°F</button>
+          </div>
+        </div>
+        <p class="feels-like" id="feelsLike">Feels like —</p>
+        <p class="description" id="description">—</p>
+      </div>
+      <div class="weather-details">
+        <div class="detail">
+          <span class="detail-label">Sunrise</span>
+          <span class="detail-value" id="sunrise">—</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Sunset</span>
+          <span class="detail-value" id="sunset">—</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Humidity</span>
+          <span class="detail-value" id="humidity">—</span>
+        </div>
+        <div class="detail">
+          <span class="detail-label">Wind</span>
+          <span class="detail-value" id="wind">—</span>
+        </div>
+      </div>
+    </main>
 
-      <!-- Footer: e.g. API credit -->
-      <footer class="footer"></footer>
-    </div>
-
-    <!-- script.js: fetch, DOM updates, form submit, °C/°F toggle -->
-    <script src="script.js"></script>
-  </body>
+    <footer class="footer">
+      <p>Powered by <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeatherMap</a></p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
 </html>

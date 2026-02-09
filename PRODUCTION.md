@@ -125,7 +125,46 @@ weather-app/
 
 ---
 
-## 7. Next steps (when moving from planning to code)
+## 7. Dependencies
+
+**Do not install anything yet.** This list is for planning only. Everything we need to have or use for the project:
+
+### Package dependencies (npm / etc.)
+
+| Dependency | Version | Purpose | Install? |
+| ---------- | ------- | ------- | -------- |
+| *(none)*   | —       | Vanilla HTML/CSS/JS; no build step, no frameworks. | **No** — no `package.json` or `node_modules` planned. |
+
+### External services (no install)
+
+| Service | Purpose | What you need |
+| ------- | ------- | ---------------- |
+| **Weather API** (e.g. [OpenWeatherMap](https://openweathermap.org)) | Current weather, temp, sunrise/sunset by city. | Free account + API key. Key will be added later via env or gitignored config; not committed. |
+
+### Browser APIs (built-in; no install)
+
+| API | Use in project |
+| --- | ----------------- |
+| **Fetch API** | `fetch()` to call the weather API and get JSON. |
+| **DOM API** | Query elements, update text/content, show/hide sections, form submit, button click for °C/°F. |
+
+### Optional dev / tooling (do not install yet)
+
+| Tool | Purpose | When / if to use |
+| ---- | ------- | ------------------- |
+| **Live reload server** (e.g. VS Code “Live Server” extension, or `npx serve`, or `python -m http.server`) | Avoid `file://` CORS issues when calling the weather API from a local HTML file. | Only if opening `index.html` directly causes API errors; then run the app through a local server. |
+| **Linter / formatter** (e.g. ESLint, Prettier, stylelint) | Consistent style and catch simple errors. | Optional; add later if desired. |
+
+### Other (no install)
+
+| Item | Notes |
+| ---- | ----- |
+| **Web font** (optional) | If we use something like Google Fonts, it’s a `<link>` in HTML — no package. |
+| **Icons** (optional) | Weather icons can be emoji, Unicode, or a small SVG/CSS set; no icon library required. |
+
+---
+
+## 8. Next steps (when moving from planning to code)
 
 1. **Scaffold** — Ensure `index.html`, `styles.css`, and `script.js` exist with minimal/empty content where needed.
 2. **Markup** — Finalize `index.html` structure and IDs/classes; no styling or logic yet.
@@ -138,4 +177,4 @@ weather-app/
 
 ---
 
-_This document is the single source of truth for the planning stage. No code should be written until this and the scaffolding are reviewed and approved._
+_This document is the single source of truth for the planning stage. No code or dependencies should be written/installed until this and the scaffolding are reviewed and approved._
