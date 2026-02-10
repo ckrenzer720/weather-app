@@ -13,47 +13,59 @@
       <p class="tagline">Current conditions anywhere</p>
     </header>
 
-    <form class="search-form" id="searchForm">
-      <input type="text" id="searchInput" class="search-input" placeholder="City or City, Country" required />
+    <form class="search-form" id="searchForm" aria-label="Search for weather by location">
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="City or City, Country"
+        aria-label="City or city and country"
+        autocomplete="off"
+        required
+      />
       <button type="submit" class="search-btn" id="searchBtn">Search</button>
     </form>
 
-    <div class="message" id="message" role="status" aria-live="polite"></div>
+    <div class="message" id="message" role="status" aria-live="polite" aria-atomic="true"></div>
 
-    <main class="weather-card" id="weatherCard" hidden>
+    <main class="weather-card" id="weatherCard" hidden aria-labelledby="location">
       <div class="weather-header">
         <h2 class="location" id="location">—</h2>
         <p class="date" id="date">—</p>
       </div>
+
       <div class="weather-main">
         <div class="temp-row">
-          <span class="temp" id="temp">—</span>
-          <div class="unit-toggle">
-            <button type="button" class="unit-btn active" id="btnCelsius" aria-pressed="true">°C</button>
-            <button type="button" class="unit-btn" id="btnFahrenheit" aria-pressed="false">°F</button>
+          <span class="temp" id="temp" aria-label="Current temperature">—</span>
+          <div class="unit-toggle" role="group" aria-label="Temperature unit">
+            <button type="button" class="unit-btn unit-btn--celsius active" id="btnCelsius" aria-pressed="true">°C</button>
+            <button type="button" class="unit-btn unit-btn--fahrenheit" id="btnFahrenheit" aria-pressed="false">°F</button>
           </div>
         </div>
         <p class="feels-like" id="feelsLike">Feels like —</p>
         <p class="description" id="description">—</p>
+        <div class="weather-icon" id="weatherIcon" aria-hidden="true"></div>
       </div>
-      <div class="weather-details">
+
+      <dl class="weather-details">
         <div class="detail">
-          <span class="detail-label">Sunrise</span>
-          <span class="detail-value" id="sunrise">—</span>
+          <dt class="detail-label">Sunrise</dt>
+          <dd class="detail-value" id="sunrise">—</dd>
         </div>
         <div class="detail">
-          <span class="detail-label">Sunset</span>
-          <span class="detail-value" id="sunset">—</span>
+          <dt class="detail-label">Sunset</dt>
+          <dd class="detail-value" id="sunset">—</dd>
         </div>
         <div class="detail">
-          <span class="detail-label">Humidity</span>
-          <span class="detail-value" id="humidity">—</span>
+          <dt class="detail-label">Humidity</dt>
+          <dd class="detail-value" id="humidity">—</dd>
         </div>
         <div class="detail">
-          <span class="detail-label">Wind</span>
-          <span class="detail-value" id="wind">—</span>
+          <dt class="detail-label">Wind</dt>
+          <dd class="detail-value" id="wind">—</dd>
         </div>
-      </div>
+      </dl>
+
     </main>
 
     <footer class="footer">
