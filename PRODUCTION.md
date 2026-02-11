@@ -58,23 +58,29 @@ Build a weather app where users can look up **current weather for any location i
 
 ### Source
 
-- Use a **free weather API** that provides:
-  - Current temperature
-  - Sunrise and sunset (Unix timestamps)
-  - Optional: description, “feels like”, humidity, wind
-- **Example:** [OpenWeatherMap](https://openweathermap.org) “Current Weather” API (free tier).
-- **Alternative:** Other providers can be swapped in if needed; we’ll isolate API calls in one place in code.
+- **[api.weather.gov](https://api.weather.gov)** (National Weather Service) — free, no API key. Requires a **User-Agent** header identifying the app.
+- **Geocoding:** NWS uses latitude/longitude. We need a separate geocoder to turn “city name” into lat/lon (e.g. [Census Geocoder](https://geocoding.geo.census.gov/geocoder/) for US, or accept lat/lon input).
 
-### What we need from the API (minimum)
+### Endpoints we use (in order)
 
-- Current temperature (in a standard unit we can convert to °C / °F)
-- Sunrise time
-- Sunset time
-- Location name (for display)
+| Step | Endpoint | Purpose |
+|------|----------|---------|
+| 1 | **GET /points/{latitude},{longitude}** | Get grid (wfo, gridX, gridY), location name (`relativeLocation`), **sunrise/sunset** (`astronomicalData`), and link to observation stations. |
+| 2 | **GET /gridpoints/{wfo}/{x},{y}/stations** | List observation stations for this grid. We pick the first (or closest) station. |
+| 3 | **GET /stations/{stationId}/observations/latest** | **Current conditions:** temperature, humidity, wind, text description (“feels like” when available). |
+
+**Optional (if we want forecast text instead of or in addition to station observation):**
+
+- **GET /gridpoints/{wfo}/{x},{y}/forecast** — Text forecast periods (temperature, shortForecast). First period can represent “current” conditions.
+
+### What we get from the API
+
+- **From /points:** Location name (city, state), sunrise, sunset.
+- **From /stations/…/observations/latest:** Current temp (°C or °F via unitCode), humidity, wind speed/direction, textDescription; heatIndex/windChill for “feels like” when present.
 
 ### Security
 
-- API key will **not** be committed to the repo. Use environment variable or a small config file that is gitignored; production doc will note “add API key here” when we implement.
+- No API key. Send **User-Agent** on every request (e.g. `WeatherApp/1.0 (your@email.com)`).
 
 ---
 
@@ -174,7 +180,3 @@ weather-app/
 6. **Styles** — Implement `styles.css` for layout and polish.
 7. **Errors** — Handle not found and network errors with clear messages.
 8. **README** — Update with run instructions and API key setup.
-
----
-
-_This document is the single source of truth for the planning stage. No code or dependencies should be written/installed until this and the scaffolding are reviewed and approved._

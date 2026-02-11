@@ -4,8 +4,8 @@
   "private": true,
   "description": "Current weather for any location — vanilla HTML/CSS/JS",
   "scripts": {
-    "start": "serve .",
-    "dev": "serve ."
+    "start": "serve . -l 5000",
+    "dev": "serve . -l 5000"
   },
   "devDependencies": {
     "serve": "^14.2.4"
