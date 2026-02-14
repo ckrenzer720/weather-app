@@ -1,28 +1,28 @@
 /**
  * Weather App — config and DOM references.
- * Load before script.js.
+ * Load before script.js. Uses var so script.js can access these globals.
  */
 
 /* API config */
-const NWS_BASE = "https://api.weather.gov";
-const GEOCODER_URL = "https://nominatim.openstreetmap.org/search";
-const USER_AGENT = "WeatherApp/1.0 (https://github.com/weather-app)";
-const nwsHeaders = { "User-Agent": USER_AGENT };
+var NWS_BASE = 'https://api.weather.gov';
+var GEOCODER_URL = 'https://nominatim.openstreetmap.org/search';
+var USER_AGENT = 'WeatherApp/1.0 (https://github.com/weather-app)';
+var nwsHeaders = { 'User-Agent': USER_AGENT };
 
 /* DOM elements */
-const searchForm = document.getElementById("searchForm");
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const message = document.getElementById("message");
-const weatherCard = document.getElementById("weatherCard");
-const locationEl = document.getElementById("location");
-const dateEl = document.getElementById("date");
-const tempEl = document.getElementById("temp");
-const feelsLikeEl = document.getElementById("feelsLike");
-const descriptionEl = document.getElementById("description");
-const sunriseEl = document.getElementById("sunrise");
-const sunsetEl = document.getElementById("sunset");
-const humidityEl = document.getElementById("humidity");
-const windEl = document.getElementById("wind");
-const btnCelsius = document.getElementById("btnCelsius");
-const btnFahrenheit = document.getElementById("btnFahrenheit");
+var searchForm = document.getElementById('searchForm');
+var searchInput = document.getElementById('searchInput');
+var searchBtn = document.getElementById('searchBtn');
+var message = document.getElementById('message');
+var weatherCard = document.getElementById('weatherCard');
+var locationEl = document.getElementById('location');
+var dateEl = document.getElementById('date');
+var tempEl = document.getElementById('temp');
+var feelsLikeEl = document.getElementById('feelsLike');
+var descriptionEl = document.getElementById('description');
+var sunriseEl = document.getElementById('sunrise');
+var sunsetEl = document.getElementById('sunset');
+var humidityEl = document.getElementById('humidity');
+var windEl = document.getElementById('wind');
+var btnCelsius = document.getElementById('btnCelsius');
+var btnFahrenheit = document.getElementById('btnFahrenheit');

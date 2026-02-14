@@ -7,6 +7,7 @@
  */
 
 let currentData = null; // { locationName, date, tempC, feelsLikeC, description, sunrise, sunset, humidity, windText }
+let searchAbortController = null;
 
 function setMessage(text) {
   if (!message) return;
@@ -77,7 +78,14 @@ function renderWeather() {
   if (windEl) windEl.textContent = currentData.windText || '—';
 }
 
-async function geocodeAddress(address) {
+function windDegreesToCardinal(deg) {
+  if (deg == null || Number.isNaN(deg)) return null;
+  const cards = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const i = Math.round(((deg % 360) + 360) % 360 / 22.5) % 16;
+  return cards[i];
+}
+
+async function geocodeAddress(address, signal) {
   const params = new URLSearchParams({
     q: address.trim(),
     format: 'json',
@@ -85,6 +93,7 @@ async function geocodeAddress(address) {
   });
   const res = await fetch(`${GEOCODER_URL}?${params}`, {
     headers: { 'User-Agent': USER_AGENT },
+    signal,
   });
   if (!res.ok) return null;
   const data = await res.json();
@@ -96,24 +105,24 @@ async function geocodeAddress(address) {
   return { lat, lon };
 }
 
-async function fetchPoints(lat, lon) {
+async function fetchPoints(lat, lon, signal) {
   const url = `${NWS_BASE}/points/${lat},${lon}`;
-  const res = await fetch(url, { headers: nwsHeaders });
+  const res = await fetch(url, { headers: nwsHeaders, signal });
   if (!res.ok) return null;
   return res.json();
 }
 
-async function fetchStations(stationsUrl) {
-  const res = await fetch(stationsUrl, { headers: nwsHeaders });
+async function fetchStations(stationsUrl, signal) {
+  const res = await fetch(stationsUrl, { headers: nwsHeaders, signal });
   if (!res.ok) return null;
   const data = await res.json();
   const ids = data.features?.map((f) => f.properties?.stationIdentifier).filter(Boolean);
   return ids && ids.length ? ids[0] : null;
 }
 
-async function fetchLatestObservation(stationId) {
+async function fetchLatestObservation(stationId, signal) {
   const url = `${NWS_BASE}/stations/${stationId}/observations/latest`;
-  const res = await fetch(url, { headers: nwsHeaders });
+  const res = await fetch(url, { headers: nwsHeaders, signal });
   if (!res.ok) return null;
   return res.json();
 }
@@ -131,7 +140,8 @@ function parseObservation(obs, timeZone) {
 
   const humidity = props.relativeHumidity?.value ?? null;
   const windSpeed = props.windSpeed?.value;
-  const windDir = props.windDirection?.value;
+  const windDirRaw = props.windDirection?.value;
+  const windDir = windDegreesToCardinal(windDirRaw) ?? (windDirRaw != null ? String(windDirRaw) : null);
   let windText = '—';
   if (windSpeed != null) {
     const speed = Math.round(windSpeed);
@@ -185,27 +195,35 @@ async function handleSubmit(event) {
   setLoading(true);
   showWeatherCard(false);
 
+  if (searchAbortController) searchAbortController.abort();
+  searchAbortController = new AbortController();
+  const signal = searchAbortController.signal;
+
   try {
-    const coords = await geocodeAddress(query);
+    const coords = await geocodeAddress(query, signal);
     if (!coords) {
       setMessage('Location not found. Try "City" or "City, State" (e.g. Austin, TX).');
       return;
     }
 
-    const pointData = await fetchPoints(coords.lat, coords.lon);
+    const pointData = await fetchPoints(coords.lat, coords.lon, signal);
     if (!pointData) {
       setMessage('Could not get weather for this location.');
       return;
     }
 
     const point = parsePoints(pointData);
-    const stationId = await fetchStations(point.observationStations);
+    if (!point.observationStations) {
+      setMessage('No weather station data for this location.');
+      return;
+    }
+    const stationId = await fetchStations(point.observationStations, signal);
     if (!stationId) {
       setMessage('No weather station data for this location.');
       return;
     }
 
-    const obsData = await fetchLatestObservation(stationId);
+    const obsData = await fetchLatestObservation(stationId, signal);
     if (!obsData) {
       setMessage('Could not load current conditions.');
       return;
@@ -228,6 +246,7 @@ async function handleSubmit(event) {
     showWeatherCard(true);
     renderWeather();
   } catch (err) {
+    if (err.name === 'AbortError') return;
     setMessage('Something went wrong. Check your connection and try again.');
     console.error(err);
   } finally {
