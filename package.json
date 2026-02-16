@@ -5,9 +5,16 @@
   "description": "Current weather for any location — vanilla HTML/CSS/JS",
   "scripts": {
     "start": "serve . -l 5000",
-    "dev": "serve . -l 5000"
+    "dev": "serve . -l 5000",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:integration": "cross-env RUN_INTEGRATION=1 jest tests/api.integration.test.js --runInBand"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "babel-jest": "^29.7.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
     "serve": "^14.2.4"
   }
 }
