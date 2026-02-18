@@ -9,6 +9,8 @@ import { cToF, formatDate, formatTimeISOtoLocal, windDegreesToCardinal, parseObs
 let currentData = null; // { locationName, date, tempC, feelsLikeC, description, sunrise, sunset, humidity, windText }
 let searchAbortController = null;
 
+const LAST_SEARCH_KEY = 'weatherAppLastSearch';
+
 function setMessage(text) {
   if (!message) return;
   message.textContent = text;
@@ -23,6 +25,24 @@ function showWeatherCard(show) {
   if (!weatherCard) return;
   if (show) weatherCard.removeAttribute('hidden');
   else weatherCard.setAttribute('hidden', '');
+}
+
+function saveLastSearch(query) {
+  if (!query) return;
+  try {
+    localStorage.setItem(LAST_SEARCH_KEY, query.trim());
+  } catch (e) {
+    // ignore quota or private mode
+  }
+}
+
+function loadLastSearch() {
+  try {
+    const saved = localStorage.getItem(LAST_SEARCH_KEY);
+    if (saved && searchInput) searchInput.value = saved;
+  } catch (e) {
+    // ignore
+  }
 }
 
 function renderTemp() {
@@ -154,6 +174,7 @@ async function handleSubmit(event) {
     setMessage('');
     showWeatherCard(true);
     renderWeather();
+    saveLastSearch(query);
   } catch (err) {
     if (err.name === 'AbortError') return;
     setMessage('Something went wrong. Check your connection and try again.');
@@ -182,6 +203,8 @@ function setUnitFahrenheit() {
   renderTemp();
   renderFeelsLike();
 }
+
+loadLastSearch();
 
 if (searchForm) searchForm.addEventListener('submit', handleSubmit);
 if (btnCelsius) btnCelsius.addEventListener('click', setUnitCelsius);

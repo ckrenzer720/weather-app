@@ -1,7 +1,7 @@
 # Weather App — Production Document
 
-**Status:** Planning  
-**Last updated:** Feb 6, 2025
+**Status:** MVP complete  
+**Last updated:** Feb 2025
 
 ---
 
@@ -45,12 +45,12 @@ Build a weather app where users can look up **current weather for any location i
 
 ## 3. Tech stack
 
-| Layer        | Technology                                                   |
-| ------------ | ------------------------------------------------------------ |
-| **Markup**   | HTML5 (semantic tags, form, accessibility attributes)        |
-| **Styling**  | CSS (no framework; custom styles)                            |
-| **Behavior** | Vanilla JavaScript (no frameworks)                           |
-| **Data**     | External weather API (e.g. OpenWeatherMap) via **Fetch API** |
+| Layer        | Technology                                                          |
+| ------------ | ------------------------------------------------------------------- |
+| **Markup**   | HTML5 (semantic tags, form, accessibility attributes)               |
+| **Styling**  | CSS (no framework; custom styles)                                   |
+| **Behavior** | Vanilla JavaScript (no frameworks)                                  |
+| **Data**     | **api.weather.gov** (NWS) + **Nominatim** (geocoding) via Fetch API |
 
 ---
 
@@ -63,11 +63,11 @@ Build a weather app where users can look up **current weather for any location i
 
 ### Endpoints we use (in order)
 
-| Step | Endpoint | Purpose |
-|------|----------|---------|
-| 1 | **GET /points/{latitude},{longitude}** | Get grid (wfo, gridX, gridY), location name (`relativeLocation`), **sunrise/sunset** (`astronomicalData`), and link to observation stations. |
-| 2 | **GET /gridpoints/{wfo}/{x},{y}/stations** | List observation stations for this grid. We pick the first (or closest) station. |
-| 3 | **GET /stations/{stationId}/observations/latest** | **Current conditions:** temperature, humidity, wind, text description (“feels like” when available). |
+| Step | Endpoint                                          | Purpose                                                                                                                                      |
+| ---- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | **GET /points/{latitude},{longitude}**            | Get grid (wfo, gridX, gridY), location name (`relativeLocation`), **sunrise/sunset** (`astronomicalData`), and link to observation stations. |
+| 2    | **GET /gridpoints/{wfo}/{x},{y}/stations**        | List observation stations for this grid. We pick the first (or closest) station.                                                             |
+| 3    | **GET /stations/{stationId}/observations/latest** | **Current conditions:** temperature, humidity, wind, text description (“feels like” when available).                                         |
 
 **Optional (if we want forecast text instead of or in addition to station observation):**
 
@@ -99,28 +99,36 @@ Build a weather app where users can look up **current weather for any location i
 
 ---
 
-## 6. Scaffolding (file and folder structure)
-
-Planned structure with **no implementation yet** — only files and their roles:
+## 6. Project structure (current)
 
 ```
 weather-app/
-├── index.html      # Single-page app: structure only (header, search form, weather display area, footer)
-├── styles.css      # All styles (layout, typography, components, responsive)
-├── script.js       # All behavior (fetch, DOM updates, form submit, °C/°F toggle)
-├── README.md       # How to run the app and how to add an API key (no key in repo)
-└── PRODUCTION.md   # This document (planning, features, scaffolding)
+├── index.html          # Single-page app (header, search form, weather card, footer)
+├── styles.css          # Layout, typography, components, responsive
+├── variables.js        # Config (NWS_BASE, GEOCODER_URL, User-Agent) + DOM refs
+├── script.js           # Entry (type="module"): fetch flow, DOM updates, °C/°F toggle
+├── lib/
+│   └── weatherLogic.js # Pure logic: cToF, parsePoints, parseObservation, formatDate, etc.
+├── tests/
+│   ├── weatherLogic.test.js   # Unit tests for lib
+│   ├── api.test.js            # Mocked API tests
+│   └── api.integration.test.js # Optional real API tests
+├── package.json        # serve, jest, babel-jest, cross-env
+├── README.md           # Run app, run tests, project overview
+├── API-REFERENCE.md    # api.weather.gov endpoints used
+└── PRODUCTION.md       # This document
 ```
 
 ### File roles
 
-| File              | Purpose                                                                                                                                                                                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **index.html**    | One page. Contains: app container, header (title/tagline), search form (input + submit), area for messages (loading/error), main weather card (location, temp, units, sunrise, sunset, optional details), footer. No logic; IDs/classes for JS and CSS. |
-| **styles.css**    | Linked from `index.html`. Styles for layout, search form, weather card, unit toggle, and responsive behavior.                                                                                                                                           |
-| **script.js**     | Linked from `index.html`. Handles: form submit, Fetch call to weather API, parsing response, updating DOM (temp, sunrise, sunset, units), °C/°F toggle, loading and error states.                                                                       |
-| **README.md**     | Short instructions: open `index.html` or use a local server; where to get and how to add API key (e.g. env or config); no API key in repo.                                                                                                              |
-| **PRODUCTION.md** | Planning only: goals, features, tech stack, API, user flows, and this scaffolding.                                                                                                                                                                      |
+| File                    | Purpose                                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **index.html**          | Structure; loads variables.js then script.js (module).                                                                            |
+| **styles.css**          | All styling; message/card/button/disabled states.                                                                                 |
+| **variables.js**        | Globals: API config + getElementById refs. Loaded before script.js.                                                               |
+| **script.js**           | Form submit → geocode → points → stations → observation → render; unit toggle; AbortController. Imports from lib/weatherLogic.js. |
+| **lib/weatherLogic.js** | Exported pure functions for parsing and formatting; used by app and tests.                                                        |
+| **tests/**              | Jest: unit (weatherLogic), mocked API (api), optional integration (api.integration).                                              |
 
 ### Out of scope for initial build
 
@@ -137,46 +145,83 @@ weather-app/
 
 ### Package dependencies (npm / etc.)
 
-| Dependency | Version | Purpose | Install? |
-| ---------- | ------- | ------- | -------- |
-| *(none)*   | —       | Vanilla HTML/CSS/JS; no build step, no frameworks. | **No** — no `package.json` or `node_modules` planned. |
+| Dependency | Version | Purpose                                            | Install?                                              |
+| ---------- | ------- | -------------------------------------------------- | ----------------------------------------------------- |
+| _(none)_   | —       | Vanilla HTML/CSS/JS; no build step, no frameworks. | **No** — no `package.json` or `node_modules` planned. |
 
 ### External services (no install)
 
-| Service | Purpose | What you need |
-| ------- | ------- | ---------------- |
+| Service                                                             | Purpose                                        | What you need                                                                                |
+| ------------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | **Weather API** (e.g. [OpenWeatherMap](https://openweathermap.org)) | Current weather, temp, sunrise/sunset by city. | Free account + API key. Key will be added later via env or gitignored config; not committed. |
 
 ### Browser APIs (built-in; no install)
 
-| API | Use in project |
-| --- | ----------------- |
-| **Fetch API** | `fetch()` to call the weather API and get JSON. |
-| **DOM API** | Query elements, update text/content, show/hide sections, form submit, button click for °C/°F. |
+| API           | Use in project                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| **Fetch API** | `fetch()` to call the weather API and get JSON.                                               |
+| **DOM API**   | Query elements, update text/content, show/hide sections, form submit, button click for °C/°F. |
 
 ### Optional dev / tooling (do not install yet)
 
-| Tool | Purpose | When / if to use |
-| ---- | ------- | ------------------- |
+| Tool                                                                                                      | Purpose                                                                          | When / if to use                                                                                  |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | **Live reload server** (e.g. VS Code “Live Server” extension, or `npx serve`, or `python -m http.server`) | Avoid `file://` CORS issues when calling the weather API from a local HTML file. | Only if opening `index.html` directly causes API errors; then run the app through a local server. |
-| **Linter / formatter** (e.g. ESLint, Prettier, stylelint) | Consistent style and catch simple errors. | Optional; add later if desired. |
+| **Linter / formatter** (e.g. ESLint, Prettier, stylelint)                                                 | Consistent style and catch simple errors.                                        | Optional; add later if desired.                                                                   |
 
 ### Other (no install)
 
-| Item | Notes |
-| ---- | ----- |
-| **Web font** (optional) | If we use something like Google Fonts, it’s a `<link>` in HTML — no package. |
-| **Icons** (optional) | Weather icons can be emoji, Unicode, or a small SVG/CSS set; no icon library required. |
+| Item                    | Notes                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| **Web font** (optional) | If we use something like Google Fonts, it’s a `<link>` in HTML — no package.           |
+| **Icons** (optional)    | Weather icons can be emoji, Unicode, or a small SVG/CSS set; no icon library required. |
 
 ---
 
-## 8. Next steps (when moving from planning to code)
+## 8. MVP checklist (done)
 
-1. **Scaffold** — Ensure `index.html`, `styles.css`, and `script.js` exist with minimal/empty content where needed.
-2. **Markup** — Finalize `index.html` structure and IDs/classes; no styling or logic yet.
-3. **API** — Sign up for chosen provider; document where the key will go; implement one Fetch call and log response.
-4. **DOM** — Wire form submit and fill the weather card from API data (temp, sunrise, sunset).
-5. **Units** — Add °C/°F toggle and conversion.
-6. **Styles** — Implement `styles.css` for layout and polish.
-7. **Errors** — Handle not found and network errors with clear messages.
-8. **README** — Update with run instructions and API key setup.
+- [x] Scaffold — index.html, styles.css, script.js, variables.js
+- [x] Markup — Structure and IDs/classes finalized
+- [x] API — api.weather.gov + Nominatim; no key needed; User-Agent sent
+- [x] DOM — Form submit → geocode → points → stations → observation → fill card
+- [x] Units — °C/°F toggle with conversion
+- [x] Styles — Layout, card, button, disabled state, responsive
+- [x] Errors — Location not found, no station, network error, AbortController
+- [x] README — Run app (npm start), run tests (npm test / test:integration)
+- [x] Tests — Unit (weatherLogic), mocked API, optional integration
+
+---
+
+## 9. What to do next (suggestions)
+
+**Polish**
+
+- **Remember last search** — Save last query in `localStorage` and prefill or show “Last: Austin, TX” link.
+- **Favicon** — Add a small favicon (e.g. sun/cloud) so the tab looks finished.
+- **Non-US message** — When NWS returns no data (e.g. city outside US), show: “Weather data is only available for US locations.”
+
+**Deploy**
+
+- **Put it online** — Deploy to GitHub Pages, Netlify, or Vercel (static site; no backend). Update README with the live URL.
+
+**Quality**
+
+- **Lighthouse** — Run Lighthouse in Chrome (Performance, Accessibility, Best Practices) and fix any quick wins.
+- **ESLint** — Add `eslint` and a basic config so the codebase stays consistent.
+
+**Nice-to-have (from §2)**
+
+- **Weather icon** — NWS forecast response can include icon URLs; or map `textDescription` to an emoji (e.g. “Clear” → ☀️).
+- **More details** — Already have humidity/wind/feels like; could add pressure or “last updated” time from observation.
+
+- ** Remember last search — Save last query in localStorage and prefill the input or show “Last: City, ST.”
+  Non-US message — When there’s no NWS data, show: “Weather data is only available for US locations.”
+  Favicon — Add a small tab icon (e.g. sun/cloud).
+  Deploy
+  Put it online — Deploy to GitHub Pages, Netlify, or Vercel (static site), then add the live URL to the README.
+  Quality
+  Lighthouse — Run in Chrome (DevTools → Lighthouse) and fix easy Performance/Accessibility issues.
+  ESLint — Add a basic config and fix reported issues.
+  Optional
+  Weather icon — Use NWS icon URLs or map description to an emoji (e.g. “Clear” → ☀️).
+  “Last updated” — Show the observation time so users know how fresh the data is. **
